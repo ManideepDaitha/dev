@@ -1,0 +1,25 @@
+node
+{
+   stage('Download stage')
+    {
+    git 'https://github.com/satish016/dev.git'
+    }
+    stage('BuildStage')
+   {
+     sh 'mvn package'
+    }
+     stage('DeploymentStage')
+    {
+    deploy adapters: [tomcat9(credentialsId: '3109462f-2499-4896-81ae-1553594a074c', path: '', url: 'http://172.31.34.197:8080')], contextPath: 'testapp', war: '**/*.war'
+    }
+
+stage('TestingStage')
+{
+    git 'https://github.com/satish016/testing.git'
+    sh 'java -jar /home/ubuntu/.jenkins/workspace/testing/testing.jar'
+}
+stage('DeliveryStage')
+{
+    deploy adapters: [tomcat9(credentialsId: '3109462f-2499-4896-81ae-1553594a074c', path: '', url: 'http://172.31.36.219:8080')], contextPath: 'prodapp', war: '**/*.war'
+}
+}
